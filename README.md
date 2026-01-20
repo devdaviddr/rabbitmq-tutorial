@@ -4,10 +4,21 @@ A simple demonstration of message queuing with RabbitMQ, Docker, and Python. Thi
 
 ## What This Does
 
-This project demonstrates:
-- **Producer**: Sends messages to a RabbitMQ queue
-- **Consumer**: Receives and processes messages from the queue
-- **RabbitMQ**: Message broker that manages the queue
+This project implements a **Work Queue** (Task Queue) pattern using RabbitMQ - a messaging system that distributes time-consuming tasks among multiple workers. This is ideal for background job processing where you want to avoid doing resource-intensive tasks immediately and waiting for them to complete.
+
+### Implementation Type: Work Queue with Reliability Features
+
+This implementation includes production-ready reliability features:
+- ✅ **Durable Queues**: Queue survives RabbitMQ broker restarts
+- ✅ **Persistent Messages**: Messages survive broker restarts
+- ✅ **Manual Acknowledgments**: Messages aren't lost if a worker fails during processing
+- ✅ **Fair Dispatch**: Workers receive only one message at a time (prevents overload)
+
+### Components
+
+- **Producer**: Sends task messages to a RabbitMQ queue
+- **Consumer**: Receives and processes tasks from the queue
+- **RabbitMQ**: Message broker that manages the queue and ensures delivery
 - **Docker**: Everything runs in containers for easy setup
 
 ## Architecture

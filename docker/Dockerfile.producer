@@ -20,5 +20,8 @@ COPY app/ .
 RUN useradd --create-home --shell /bin/bash app && chown -R app:app /app
 USER app
 
+# Set environment to disable Python output buffering
+ENV PYTHONUNBUFFERED=1
+
 # Command to run the producer
 CMD ["python", "producer.py"]

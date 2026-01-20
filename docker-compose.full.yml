@@ -34,7 +34,7 @@ services:
       - RABBITMQ_HOST=rabbitmq
     networks:
       - rabbitmq-net
-    restart: unless-stopped
+    restart: "no"  # Producer sends one message and exits - don't restart
     # Remove profiles to run automatically with docker compose up
     # profiles:
     #   - producer
