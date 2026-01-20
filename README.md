@@ -135,27 +135,51 @@ Stop everything:
 docker compose down
 ```
 
-## Viewing Messages in Real-Time
+## Viewing and Sending Messages
 
-To see messages being consumed as they arrive:
+### Watch Consumer Process Messages
 
+**Terminal 1: Monitor consumer logs in real-time**
 ```bash
-# Stop the background consumer
-docker compose -f docker-compose.full.yml stop consumer
-
-# Run consumer in foreground (Terminal 1)
-docker compose -f docker-compose.full.yml exec consumer python consumer.py
-
-# Send a message (Terminal 2)
-docker compose -f docker-compose.full.yml exec producer python producer.py "Hello World!"
+docker compose -f docker-compose.full.yml logs -f consumer
 ```
 
 You'll see:
 ```
- [*] Waiting for messages. To exit press CTRL+C
- [x] Received: Hello World!
- [x] Done
+[*] Waiting for messages. To exit press CTRL+C
+[x] Received: Your message here
+[x] Done
 ```
+
+### Send Messages Manually
+
+**Terminal 2: Send messages to the queue**
+```bash
+# Send a single message
+docker compose -f docker-compose.full.yml run --rm producer python producer.py "Hello World"
+
+# Send message with dots (simulates longer processing - 1 second per dot)
+docker compose -f docker-compose.full.yml run --rm producer python producer.py "Task with work..."
+
+# Send multiple messages
+docker compose -f docker-compose.full.yml run --rm producer python producer.py "Message 1"
+docker compose -f docker-compose.full.yml run --rm producer python producer.py "Message 2"
+docker compose -f docker-compose.full.yml run --rm producer python producer.py "Message 3"
+```
+
+### Interactive Consumer (Alternative)
+
+Run the consumer in the foreground to see output immediately:
+
+```bash
+# Stop background consumer
+docker compose -f docker-compose.full.yml stop consumer
+
+# Run consumer in foreground
+docker compose -f docker-compose.full.yml run --rm consumer python consumer.py
+```
+
+Then send messages from another terminal and watch them process in real-time.
 
 ## Management UI
 
