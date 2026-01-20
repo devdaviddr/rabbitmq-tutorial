@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"   # AMQP protocol
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - rabbitmq-net
+
+  producer:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.producer
+    container_name: rabbitmq-producer
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+    networks:
+      - rabbitmq-net
+    restart: unless-stopped
+    # Remove profiles to run automatically with docker compose up
+    # profiles:
+    #   - producer
+
+  consumer:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.consumer
+    container_name: rabbitmq-consumer
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+    networks:
+      - rabbitmq-net
+    restart: unless-stopped
+    # Remove profiles to run automatically with docker compose up
+    # profiles:
+    #   - consumer
+
+volumes:
+  rabbitmq_data:
+
+networks:
+  rabbitmq-net:
+    driver: bridge
